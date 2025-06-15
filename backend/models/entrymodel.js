@@ -5,7 +5,7 @@ const schema = new mongoose.Schema({
     title: String,
     date: Date,
     doneBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FitnessUser' }],
-    done: {Type: Boolean, default: false}
+    done: {type: Boolean, default: false}
 })
 
 schema.set('toJSON', {
@@ -16,5 +16,5 @@ schema.set('toJSON', {
   }
 })
 
-const Entry = mongoose.Model('Entry', schema)
+const Entry = mongoose.model('Entry', schema)
 export default Entry

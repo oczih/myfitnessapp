@@ -11,6 +11,8 @@ const userSchema = new mongoose.Schema({
             ref: 'Entry'
         }
     ],
+    experience: {type: Number, default: 0},
+    streak: {type: Number, default: 0}
 });
 
 
@@ -25,4 +27,4 @@ userSchema.set('toJSON', {
 
 const FitnessUser = mongoose.model('FitnessUser', userSchema)
 
-export default User
+export default FitnessUser

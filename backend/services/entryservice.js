@@ -10,6 +10,6 @@ export const getEntriesById = async (id) => {
         return null;
     }
 
-    const entry = await ENtry.findById(id).lean();
+    const entry = await Entry.findById(id).lean();
     return entry || null;
 }
