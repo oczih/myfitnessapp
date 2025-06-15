@@ -23,6 +23,6 @@ userSchema.set('toJSON', {
     }
 })
 
-const User = mongoose.model('User', userSchema)
+const FitnessUser = mongoose.model('FitnessUser', userSchema)
 
 export default User

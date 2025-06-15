@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 const schema = new mongoose.Schema({
     title: String,
     date: Date,
-    doneBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    doneBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FitnessUser' }],
     done: {Type: Boolean, default: false}
 })
 
