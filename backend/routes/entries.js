@@ -5,7 +5,7 @@ const router = express.Router()
 
 router.get('/', async (req,res) => {
     try {
-        const entries = entryservice.getEntries()
+        const entries = await entryservice.getEntries()
         res.json(entries)
     }catch(error) {
         console.error('Failed to fetch entries',error)
@@ -16,7 +16,7 @@ router.get('/:id', async (req,res) => {
     try {
         const entry = await entryservice.getEntriesById(req.params.id)
         if(!entry) {
-            return res.status(400).send({error: 'Entry not found'})
+            return res.status(404).send({ error: 'Entry not found' });
             
         }
         res.json(entry)

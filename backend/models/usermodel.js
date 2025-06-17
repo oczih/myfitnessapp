@@ -1,19 +1,25 @@
 import mongoose from 'mongoose'
 
 const userSchema = new mongoose.Schema({
-    name: { type: String, unique: true },
-    username: { type: String, required: true },
-    password: { type: String, required: true },
-    email: {type: String, required: true },
+    name: { type: String },
+    username: { type: String },           // Optional for OAuth users
+    password: { type: String },           // Optional for OAuth users
+    email: { type: String, required: true, unique: true },
     entries: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Entry'
-        }
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Entry'
+      }
     ],
-    experience: {type: Number, default: 0},
-    streak: {type: Number, default: 0}
-});
+    experience: { type: Number, default: 0 },
+    streak: { type: Number, default: 0 },
+  
+    googleId: {
+      type: String,
+      default: null,
+    },
+  });
+  
 
 
 userSchema.set('toJSON', {

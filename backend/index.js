@@ -1,29 +1,71 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import session from 'express-session'
+import passport from './config/passport.js'
 import dotenv from 'dotenv';
-import loginrouter from './routes/login.js'
-import entriesrouter from './routes/entries.js'
-dotenv.config();
 import cors from 'cors';
+import { ExpressAuth } from '@auth/express';
+import Google from '@auth/express/providers/google';
+import usersrouter from './routes/users.js'
+import entriesrouter from './routes/entries.js'
+import habitsrouter from './routes/habits.js'
+import FitnessUser from './models/usermodel.js'; // Your mongoose user model
+import authroutes from './routes/auth-routes.js'
+dotenv.config();
+
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 
+// Middleware
 app.use(express.json());
-app.use(cors())
-app.use('/api/entries', entriesrouter)
-app.use('/api/login', loginrouter)
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-})
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}));
 
 
-console.log('Connecting to MongoDB...');
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-session-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // set to true if using HTTPS
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 // 1 day
+  }
+}));
+
+// Now initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+console.log('Google Client ID:', process.env.GOOGLE_CLIENT_ID);
+console.log('Google Client Secret:', process.env.GOOGLE_CLIENT_SECRET ? '***' : 'Not set');
+
+
+
+app.use('/auth',authroutes)
+app.use('/api/users', usersrouter);
+app.use('/api/entries', entriesrouter);
+app.use('/api/habits', habitsrouter)
+app.get('/auth/session', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json(req.user);
+  } else {
+    res.status(401).json({ error: 'Not authenticated' });
+  }
+});
+
 mongoose.connect(MONGO_URI)
-    .then(() => {
-        console.log('Connected to MongoDB');
-    })
-    .catch((error) => {
-        console.error('Error connecting to MongoDB:', error.message);
-    })
-
+  .then(() => {
+    console.log('Connected to MongoDB');
+    app.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err.message);
+  });
