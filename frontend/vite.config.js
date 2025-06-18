@@ -6,6 +6,12 @@ export default defineConfig({
   appType: 'spa',  // tärkeä, että frontend käyttää SPA-tilaa
   server: {
     port: 5173,
-    // Vite käsittelee historia fallbackin automaattisesti appType: 'spa' -asetuksella
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000', // <- Varmista että tämä on backendin portti!
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 })

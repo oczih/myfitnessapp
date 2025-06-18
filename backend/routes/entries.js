@@ -1,8 +1,9 @@
 import express from 'express'
 import * as entryservice from '../services/entryservice.js'
 import Entry from '../models/entrymodel.js'
-import tokenExtractor from '../middleware/tokenextractor.js'
+import { tokenExtractor } from '../middleware/tokenextractor.js'
 import { userExtractor } from '../middleware/userextractor.js';
+import FitnessUser from '../models/usermodel.js';
 const router = express.Router()
 
 router.get('/', async (req,res) => {
@@ -32,13 +33,16 @@ router.get('/:id', async (req,res) => {
 router.post('/', tokenExtractor, async (req,res) => {
     const entry = new Entry(req.body)
     const userId = req.decodedToken.id;
-    entry.doneBy = [userId]
+    console.log(userId)
+    entry.doneBy = userId
     try{
         const savedEntry = await entry.save()
-        await FitnessUser.updateOne(
-            { _id: userId },
-            { $push: { entries: savedEntry._id } }
-            );
+        const user = await FitnessUser.findById(userId)
+            if (!user) {
+            return res.status(404).json({ error: 'User not found' })
+            }
+            user.entries.push(savedEntry._id)
+            await user.save()
 
         console.log('Entry saved: ', savedEntry)
         res.status(201).send(savedEntry)
@@ -55,11 +59,11 @@ router.delete('/:id', userExtractor, async (request, response) => {
     return response.status(204).end()
   }
   console.log(entry)
-  if ( user.id.toString() !== entry.doneBy.toString() ) {
-    return response.status(403).json({ error: 'user not authorized' })
+  if (user.id.toString() !== entry.doneBy.toString()) {
+    return response.status(403).json({ error: 'user not authorized' });
   }
 
-  await book.deleteOne()
+  await entry.deleteOne()
 
   user.entries = user.entries.filter(b => b._id.toString() !== entry._id.toString())
 

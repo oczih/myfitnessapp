@@ -74,7 +74,7 @@ export default function HabitComponent({ userId, user, setUser, setMessage, read
               ))}
             </div>
           </div>
-            <Link to={`/addhabit${selected}`}><h3 className="normal-case font-bold text-lg btn btn-ghost tracking-tight mb-5 text-white hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md">Create Habit</h3></Link>
+            <Link to={`/addhabit/${encodeURIComponent(selected)}`}><h3 className="normal-case font-bold text-lg btn btn-ghost tracking-tight mb-5 text-white hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md">Create Habit</h3></Link>
           <button
             onClick={handlePrompt}
             className="normal-case font-bold text-lg btn btn-ghost tracking-tight mb-5 text-white hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md"

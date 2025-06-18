@@ -8,6 +8,12 @@ export const AddHabit = ({ habit, user, setUser, setMessage }) => {
 
   const handleSubmit = async () => {
     try {
+      if (!user || !user.token || !user.id) {
+        console.error("User not loaded or invalid:", user);
+        setMessage && setMessage("User not authenticated");
+        return;
+      }
+      
         entries.setToken(user.token);
       await entries.createEntry({
         doneBy: user.id,
@@ -15,10 +21,10 @@ export const AddHabit = ({ habit, user, setUser, setMessage }) => {
         weekdays: selectedWeekdays,
         emoji: habit.emoji,
       });
-      setMessage && setMessage("Habit added successfully!");
+      setMessage && setMessage("Entry added successfully!");
     } catch (error) {
-      console.error("Failed to add habit:", error);
-      setMessage && setMessage("Failed to add habit");
+      console.error("Failed to add entry:", error);
+      setMessage && setMessage("Failed to add entry");
     }
   };
 

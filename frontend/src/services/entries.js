@@ -8,6 +8,7 @@ let token = null
 
 const setToken = newToken => {
   token = `Bearer ${newToken}`
+  console.log("Using token:", token); 
 }
 
 
@@ -24,24 +25,47 @@ const getById = async (id) => {
       console.log(error)
 }
 }
-const createEntry = async newObject => {
-    const config = {
-        headers: {Authorization: token}
-    }
-    console.log(newObject)
-    const response = await axios.post(API_URL, newObject, config);
-    return response.data;
-}
-const update = (id, newData) => {
-  return axios.put(`${API_URL}/${id}`, newData).then(response => response.data);
-};
-
-const remove = id => {
+const createEntry = async (newObject) => {
   const config = {
     headers: { Authorization: token },
+  };
+  try {
+    console.log(config)
+    const response = await axios.post(API_URL, newObject, config);
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create entry:", error);
+    throw error;
   }
-  const request = axios.delete(`${API_URL}/${id}`, config)
-  return request.then(response => response.data)
-}
-export default {getAll
-, getById, createEntry, setToken, remove, update}
+};
+const update = async (id, newData) => {
+  try {
+    const response = await axios.put(`${API_URL}/${id}`, newData);
+    return response.data;
+  } catch (error) {
+    console.error("Update failed:", error);
+    throw error;
+  }
+};
+
+const remove = async (id) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+  try {
+    const response = await axios.delete(`${API_URL}/${id}`, config);
+    return response.data;
+  } catch (error) {
+    console.error("Delete failed:", error);
+    throw error;
+  }
+};
+export default {
+  getAll,
+  getById,
+  createEntry,
+  setToken,
+  remove,
+  update
+};
