@@ -5,11 +5,11 @@ export const getHabits = async () => {
     return habits
 }
 
-export const getHabitsById = async (id) => {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return null;
+export const getHabitsByUserId = async (userId) => {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return [];
     }
-
-    const habit = await Habit.findById(id).lean();
-    return habit || null;
-}
+  
+    const habits = await Habit.find({ user: userId }).lean();
+    return habits;
+  };

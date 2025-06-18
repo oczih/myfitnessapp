@@ -14,7 +14,7 @@ router.get('/', async (req,res) => {
 }) 
 router.get('/:id', async (req,res) => {
     try {
-        const habit = await habitservice.getHabitsById(req.params.id)
+        const habit = await habitservice.getHabitsByUserId(req.params.id)
         if(!habit) {
             return res.status(404).send({ error: 'Habit not found' });
             

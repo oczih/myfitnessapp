@@ -33,53 +33,48 @@ export default function HabitComponent({ userId, user, setUser, setMessage }) {
     },
   ]);
   const [userHabits, setUserHabits] = useState([]);
-  const [newHabit, setNewHabit] = useState("");
-
   // Fetch user habits from backend
   useEffect(() => {
     async function fetchUserHabits() {
       const res = habitservice.getById(userId)
-      setUserHabits(res);
+      setReadyHabits((prev) => [...prev, res]);
     }
     fetchUserHabits();
   }, [userId]);
   
-  // Add new habit handler
-  const addHabit = async () => {
-    if (!newHabit.trim()) return;
+  // Add new habit hand
 
-    const res = habitservice.createHabit({ userId, habit: newHabit })
-
-    if (res.ok) {
-      setUserHabits((prev) => [...prev, newHabit]);
-      setNewHabit("");
+  console.log(userHabits)
+  const handlePrompt = async () => {
+    const text = window.prompt("Enter your custom habit:");
+    if (!text || text.trim() === "") return;
+  
+    const trimmed = text.trim();
+  
+    const res = await habitservice.createHabit({ userId, title: trimmed });
+  
+    if (res.status === 201) {
+      setReadyHabits((prev) => [...prev, trimmed]);
+      setMessage && setMessage("Habit added!");
     } else {
       alert("Failed to add habit");
     }
   };
-
-
-  const handlePrompt = () => {
-    const text = window.prompt("Enter your custom habit:");
-    if (!text || text.trim() === "") return; // Ignore empty input
   
-    const trimmed = text.trim();
-    setNewHabit(trimmed);
-  };
   return (
     <div>
       <Header user={user} setUser={setUser} setMessage={setMessage}/>
-      <div className="w-11/14 mx-auto text-center mt-10 bg-[#A14DA0] rounded-md">
-      <div className="w-11/14 mx-auto text-center mt-10 bg-[#A14DA0] rounded-md p-6">
+      <div className="w-11/15 mx-auto text-center mt-10 bg-[#A14DA0] rounded-xl pt-10">
+      <div className="">
       <h2 className='text-3xl sm:text-4xl lg:text-5xl mb-10'>Ready Habits</h2>
 
       {/* Center the grid */}
       <div className="flex justify-center">
-        <div className="grid grid-cols-3 gap-4 max-w-md">
+        <div className="grid grid-cols-3 gap-5 max-w-md">
           {readyHabits.map((habit, i) => (
             <div
               key={i}
-              className="flex flex-col items-center justify-center w-20 h-20 bg-[#7E1F86] text-white rounded-xl shadow-md cursor-pointer hover:shadow-2xl transition-shadow"
+              className="flex flex-col items-center justify-center w-30 h-30 bg-[#7E1F86] text-white rounded-xl shadow-md cursor-pointer hover:shadow-2xl transition-shadow"
             >
               <div className="text-2xl drop-shadow">{habit.emoji}</div>
               <h2 className="text-center text-xs font-medium mt-1">{habit.text}</h2>
@@ -87,21 +82,20 @@ export default function HabitComponent({ userId, user, setUser, setMessage }) {
           ))}
         </div>
       </div>
+      <button
+        onClick={handlePrompt}
+        className="normal-case font-bold text-lg btn btn-ghost tracking-tight mt-10"
+      >
+        Add Custom Habit
+      </button>
     </div>
-      <h2 className='text-3xl sm:text-4xl lg:text-5xl text-[#7E1F86] mb-10'>Your Habits</h2>
+      <h2 className='text-3xl sm:text-4xl lg:text-5xl mb-10 mt-10 text-center pb-10'>Your Habits</h2>
       {userHabits.length > 0 && (<ul>
         {userHabits.map((habit, i) => (
           <li key={i}>{habit}</li>
         ))}
       </ul>)}
-      <button
-        onClick={handlePrompt}
-        className="bg-purple-100 text-purple-800 font-semibold px-4 py-2 rounded-full hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md"
-      >
-        Add Custom Habit
-      </button>
-        <button onClick={addHabit} className='text-3xl sm:text-4xl lg:text-5xl text-[#7E1F86] mb-10'>Add Habit</button>
-        </div>
+      </div>
     </div>
   );
 }

@@ -17,13 +17,18 @@ const getAll = async () => {
 }
 
 const getById = async (id) => {
+  try {
     const { data } = await axios.get(`${API_URL}/${id}`);
-    return data;
+    return data;}
+    catch(error){
+      console.log(error)
+}
 }
 const createHabit = async newObject => {
     const config = {
         headers: {Authorization: token}
     }
+    console.log(newObject)
     const response = await axios.post(API_URL, newObject, config);
     return response.data;
 }
