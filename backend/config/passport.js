@@ -1,6 +1,7 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import FitnessUser from "../models/usermodel.js";
+import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -23,8 +24,12 @@ passport.use(
             email: profile.emails[0].value,
           });
         }
-
-        return done(null, user);
+        const token = jwt.sign(
+        { id: user._id }, 
+        process.env.SECRET, 
+        { expiresIn: '7d' }
+      );
+        return done(null, {user, token});
       } catch (err) {
         return done(err, null);
       }

@@ -1,15 +1,16 @@
 import Habit from '../models/habitmodel.js'
 import mongoose from 'mongoose';
-export const getHabits = async () => {
-    const habits = await Habit.find().lean();
-    return habits
-}
 
+export const getHabits = async () => {
+    return await Habit.find({});
+};
+
+// Get habits for a specific user, including default habits
 export const getHabitsByUserId = async (userId) => {
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return [];
-    }
-  
-    const habits = await Habit.find({ user: userId }).lean();
-    return habits;
-  };
+  return await Habit.find({
+    $or: [
+      { user: userId },
+      { isDefault: true }
+    ]
+  }).sort({ isDefault: -1 }); // default habits first (optional)
+};

@@ -12,32 +12,27 @@ router.get('/', async (req,res) => {
         res.status(500).send({error: 'Failed to fetch habits'})
     }
 }) 
-router.get('/:id', async (req,res) => {
-    try {
-        const habit = await habitservice.getHabitsByUserId(req.params.id)
-        if(!habit) {
-            return res.status(404).send({ error: 'Habit not found' });
-            
-        }
-        res.json(habit)
-    }
-    catch(error){
-        console.log(error)
-        res.status(500).json({ error: 'Failed to fetch habit' });
-    }
-})
+router.get('/:id', async (req, res) => {
+  try {
+    const habits = await habitservice.getHabitsByUserId(req.params.id);
+    res.json(habits);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch habits for user' });
+  }
+});
 
 router.post('/', async (req, res) => {
-    const { title, userId } = req.body;
+    const { text, userId, emoji } = req.body;
   
-    if (!title || !userId) {
+    if (!text || !userId) {
       return res.status(400).json({ error: 'Missing title or user ID' });
     }
   
     try {
       const newHabit = new Habit({
-        title,
+        text,
         user: userId,
+        emoji: emoji || '✨'
       });
   
       const savedHabit = await newHabit.save();

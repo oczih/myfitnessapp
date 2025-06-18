@@ -1,0 +1,41 @@
+import { useState } from "react";
+import { Header } from "./Header";
+import { CheckList } from './Calendar';
+import entries from "../services/entries";
+
+export const AddHabit = ({ habit, user, setUser, setMessage }) => {
+  const [selectedWeekdays, setSelectedWeekdays] = useState([]);
+
+  const handleSubmit = async () => {
+    try {
+        entries.setToken(user.token);
+      await entries.createEntry({
+        doneBy: user.id,
+        title: habit.text,
+        weekdays: selectedWeekdays,
+        emoji: habit.emoji,
+      });
+      setMessage && setMessage("Habit added successfully!");
+    } catch (error) {
+      console.error("Failed to add habit:", error);
+      setMessage && setMessage("Failed to add habit");
+    }
+  };
+
+  return (
+    <div>
+      <Header user={user} setUser={setUser} setMessage={setMessage} />
+      <div className="w-11/15 min-h-150 mx-auto text-center mt-10 bg-[#A14DA0] rounded-xl pt-10">
+        <h2 className='text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-10 drop-shadow-xl'>{habit.emoji} {habit.text}</h2>
+        <CheckList selectedWeekdays={selectedWeekdays} setSelectedWeekdays={setSelectedWeekdays} />
+        <h2 className='text-2xl sm:text-2xl lg:text-2xl mb-10 drop-shadow-xl'>Add this habit to your habits?</h2>
+        <button 
+          onClick={handleSubmit}
+          className="normal-case font-bold text-lg btn btn-ghost tracking-tight mb-5 bg-green-600 text-white hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md"
+        >
+          Add to my habits
+        </button>
+      </div>
+    </div>
+  );
+};

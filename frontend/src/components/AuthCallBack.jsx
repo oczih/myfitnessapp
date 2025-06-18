@@ -5,26 +5,21 @@ export default function AuthCallback({ setUser }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function completeAuth() {
-      try {
-        const response = await fetch("http://localhost:3000/auth/session", {
-          credentials: "include"
-        });
-        
-        if (!response.ok) throw new Error("Auth failed");
-        
-        const userData = await response.json();
-        console.log("User data from /auth/session:", userData);
-        localStorage.setItem("loggedFitnessappUser", JSON.stringify(userData));
-        setUser(userData);
-        navigate("/");
-      } catch (error) {
-        console.error("Auth error:", error);
-        navigate("/login", { state: { error: "Login failed" } });
-      }
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    const name = params.get("name");
+    const email = params.get("email");
+    const id = params.get("id");
+
+    if (token && id) {
+      const user = { token, name, email, id };
+      localStorage.setItem("loggedFitnessappUser", JSON.stringify(user));
+      setUser(user);
+      navigate("/");
+    } else {
+      navigate("/", { state: { error: "Login failed" } });
     }
-    completeAuth();
   }, [navigate, setUser]);
 
-  return <div>Loading...</div>;
+  return <div>Logging you in...</div>;
 }

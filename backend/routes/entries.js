@@ -1,6 +1,8 @@
 import express from 'express'
 import * as entryservice from '../services/entryservice.js'
 import Entry from '../models/entrymodel.js'
+import tokenExtractor from '../middleware/tokenextractor.js'
+import { userExtractor } from '../middleware/userextractor.js';
 const router = express.Router()
 
 router.get('/', async (req,res) => {
@@ -27,10 +29,17 @@ router.get('/:id', async (req,res) => {
     }
 })
 
-router.post('/', async (req,res) => {
+router.post('/', tokenExtractor, async (req,res) => {
     const entry = new Entry(req.body)
+    const userId = req.decodedToken.id;
+    entry.doneBy = [userId]
     try{
         const savedEntry = await entry.save()
+        await FitnessUser.updateOne(
+            { _id: userId },
+            { $push: { entries: savedEntry._id } }
+            );
+
         console.log('Entry saved: ', savedEntry)
         res.status(201).send(savedEntry)
     }catch(error){
@@ -38,5 +47,26 @@ router.post('/', async (req,res) => {
         res.status(500).send({ error: 'Failed to save entry' });
     }
 })
+router.delete('/:id', userExtractor, async (request, response) => {
+  const user = request.user
+
+  const entry = await Entry.findById(request.params.id)
+  if (!entry) {
+    return response.status(204).end()
+  }
+  console.log(entry)
+  if ( user.id.toString() !== entry.doneBy.toString() ) {
+    return response.status(403).json({ error: 'user not authorized' })
+  }
+
+  await book.deleteOne()
+
+  user.entries = user.entries.filter(b => b._id.toString() !== entry._id.toString())
+
+  await user.save()
+
+  response.status(204).end()
+})
+
 
 export default router

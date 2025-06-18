@@ -20,8 +20,8 @@ export const Header = ({ user, setUser, setMessage }) => {
                         <h3 className="normal-case font-bold text-lg btn btn-ghost tracking-tight">Home</h3>
                     </Link>
 
-                    <Link to={user ? "/suggestaperson" : "/login"} className="hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md">
-                        <h3 className="normal-case font-bold text-lg btn btn-ghost tracking-tight"></h3>
+                    <Link to={user ? "/dailyhabits" : "/login"} className="hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md">
+                        <h3 className="normal-case font-bold text-lg btn btn-ghost tracking-tight">Daily</h3>
                     </Link>
 
                     {!user && (

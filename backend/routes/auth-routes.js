@@ -11,16 +11,23 @@ router.get(
   
   /* Callback route for OAuth2 authentication */
 router.get(
-    "/google/callback",
-    passport.authenticate("google", { failureRedirect: "/login" }),
-    function (req, res) {
-      // Successful authentication
-      console.log(req.user);
-      req.session.save(() => {
-        res.redirect('http://localhost:5173/auth/callback');  // Edit for correct redirect link
-      });
-    }
-  );
+  "/google/callback",
+  passport.authenticate("google", { session: false, failureRedirect: '/' }),
+  function (req, res) {
+    const { user, token } = req.user;
+
+    // Encode URI components for safety
+    const redirectUrl = new URL('http://localhost:5173/auth/callback');
+    redirectUrl.searchParams.set('token', token);
+    redirectUrl.searchParams.set('name', user.name);
+    redirectUrl.searchParams.set('email', user.email);
+    redirectUrl.searchParams.set('id', user._id.toString());
+
+    console.log('Redirecting to:', redirectUrl.toString());
+
+    res.redirect(redirectUrl.toString());
+  }
+);
   
 
 router.post('/signout', (req, res) => {

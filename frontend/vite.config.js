@@ -7,5 +7,5 @@ export default defineConfig({
   server: {
     port: 5173,
     // Vite käsittelee historia fallbackin automaattisesti appType: 'spa' -asetuksella
-  }
+  },
 })
