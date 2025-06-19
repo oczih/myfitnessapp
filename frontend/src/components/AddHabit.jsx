@@ -3,7 +3,8 @@ import { Header } from "./Header";
 import { CheckList } from './Calendar';
 import entries from "../services/entries";
 import { useNavigate, useParams } from 'react-router-dom';
-export const AddHabit = ({ user, setUser, setMessage, readyHabits }) => {
+import { toast } from "react-toastify";
+export const AddHabit = ({ user, setUser, readyHabits }) => {
    const { habitText } = useParams();
   const decodedHabitText = decodeURIComponent(habitText);
   const habit = readyHabits.find(h => h.text === decodedHabitText);
@@ -13,7 +14,7 @@ export const AddHabit = ({ user, setUser, setMessage, readyHabits }) => {
     try {
       if (!user || !user.token || !user.id) {
         console.error("User not loaded or invalid:", user);
-        setMessage && setMessage("User not authenticated");
+        toast("User not authenticated");
         return;
       }
       
@@ -24,18 +25,18 @@ export const AddHabit = ({ user, setUser, setMessage, readyHabits }) => {
         weekdays: selectedWeekdays,
         emoji: habit.emoji, 
       });
-      setMessage && setMessage("Entry added successfully!");
+      toast("Entry added successfully!");
       setSelectedWeekdays([])
       navigate("/dashboard")
     } catch (error) {
       console.error("Failed to add entry:", error);
-      setMessage && setMessage("Failed to add entry");
+      toast("Failed to add entry");
     }
   };
 
   return (
     <div>
-      <Header user={user} setUser={setUser} setMessage={setMessage} />
+      <Header user={user} setUser={setUser} />
       <div className="w-11/15 min-h-150 mx-auto text-center mt-10 bg-[#A14DA0] rounded-xl pt-10">
         <h2 className='text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-10 drop-shadow-xl'>{habit.emoji ? habit.emoji : "✨"} {habit.text}</h2>
         <CheckList selectedWeekdays={selectedWeekdays} setSelectedWeekdays={setSelectedWeekdays} />

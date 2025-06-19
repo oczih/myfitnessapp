@@ -1,10 +1,10 @@
 import { Header } from "./Header"
 
-export const AllHabits = ({user, setUser, setMessage}) => {
+export const AllHabits = ({user, setUser}) => {
     console.log(...user.entries)
     return (
         <div>
-            <Header user={user} setMessage={setMessage} setUser={setUser}/>
+            <Header user={user} setUser={setUser}/>
                     <h2 className='text-3xl sm:text-4xl lg:text-5xl mb-10 mt-10 text-center pb-10 text-black'>Your Habits</h2>
                     <div className="flex justify-center">
                     <div

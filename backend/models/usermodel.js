@@ -18,7 +18,10 @@ const userSchema = new mongoose.Schema({
       type: String,
       default: null,
     },
-    flowers: [{type: String, default: []}],
+    flowers: {
+      type: [{ name: String, position: String }],
+      default: []
+    },
     diamonds: { type: Number, default: 0}
   });
   

@@ -14,14 +14,13 @@ import { AddHabit } from './components/AddHabit';
 import habitservice from './services/habits.js'
 import { AllHabits } from './components/AllHabits.jsx';
 import entries from './services/entries';
-import { fetchFullUser } from './services/user.js';
 import { ToastContainer, toast, Zoom } from 'react-toastify';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import ProgressBar from './components/ProgressBar.jsx';
 import userservice from './services/user.js'
+import { FlowerField } from './components/FlowerField.jsx';
 const App = () => {
-  const [message, setMessage] = useState('')
   const [user, setUser] = useState(null); 
   const [readyHabits, setReadyHabits] = useState([])
   const [diamonds, setDiamonds] = useState(0);
@@ -37,7 +36,7 @@ useEffect(() => {
         habitservice.setToken(partialUser.token);
 
         try {
-          const fullUser = await fetchFullUser(partialUser.id, partialUser.token);
+          const fullUser = await userservice.fetchFullUser(partialUser.id, partialUser.token);
           setUser({ ...fullUser, token: partialUser.token });
           toast("Added user!"); // Combine full data with token
           setDiamonds(fullUser.diamonds || 0);
@@ -77,7 +76,15 @@ useEffect(() => {
       particleCount: 150,
       spread: 70,
       origin: { y: 0.6 }
+      
     });
+    try{
+      handleDiamondsChange(5)
+    }catch(error){
+      console.log('Error updating diamonds:', error)
+      return;
+    }
+
   }
 }, [percentage]);
 const ProtectedRoute = ({ user, children }) => {
@@ -97,10 +104,12 @@ const ProtectedRoute = ({ user, children }) => {
 
   const handleDiamondsChange = async (diamonds) => {
     try {
+      console.log("User token here: ",user.token)
       userservice.setToken(user.token)
       const updatedUser = await userservice.update(user.id, {diamonds})
       console.log('Updated user:', updatedUser)
       setDiamonds(updatedUser.diamonds)
+      toast(`${diamonds.toString()} diamonds added! 💎`)
     }catch(error) {
       console.error('Error updating diamonds:', error)
       toast.error("Failed to update diamonds.")
@@ -138,10 +147,10 @@ const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
     toast.error("Failed to update habit status.");
   }
 }
-  const DashBoard = ({user, setUser, setMessage}) => {
+  const DashBoard = ({user, setUser, }) => {
   return (
   <div>
-    <Header user={user} setUser={setUser} setMessage={setMessage}/>
+    <Header user={user} setUser={setUser}/>
     <div className='w-11/15 mx-auto text-center mt-10 bg-stone-200 rounded-xl pt-10 pb-20 drop-shadow-md'>
      <h2 className='block text-left text-xl sm:text-xl lg:text-xl text-[#7E1F86] ml-5'>💎 Diamonds: {user.diamonds && user.diamonds >= 0 ? user.diamonds : 0}</h2>
     <h1 className="text-4xl sm:text-5xl text-center lg:text-6xl text-[#7E1F86] font-extrabold tracking-tight mb-10">
@@ -202,7 +211,7 @@ const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
   const HomeScreen = () => {
     return (
       <div className="w-full text-center mt-10">
-        <Header user={user} setUser={setUser} setMessage={setMessage} />
+        <Header user={user} setUser={setUser}  />
         <h1 className="text-4xl sm:text-5xl lg:text-6xl text-[#7E1F86] font-extrabold tracking-tight mb-6">
           Gamify your habits!
         </h1>
@@ -217,7 +226,6 @@ const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
       async function fetchUserHabits() {
         try {
           const res = await habitservice.getById(user.id);
-          console.log(user.id)
           console.log(res);
           setReadyHabits(res);
   
@@ -233,7 +241,10 @@ const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
 
   console.log(user)
   return(
-    <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
+<div className="relative min-h-screen bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-[length:20px_20px] bg-repeat overflow-y-auto overflow-x-hidden">
+
+
+
       <ToastContainer
         position="bottom-right"
         autoClose={3000}
@@ -253,21 +264,20 @@ const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
         <Route path="/auth/signout" element={<SignOut />} />
         <Route path="/allhabits" element={
         <ProtectedRoute user={user}><AllHabits user={user} /></ProtectedRoute>} />
+        <Route path="/flowerfield" element={
+        <ProtectedRoute user={user}><FlowerField user={user} setUser={setUser} /></ProtectedRoute>} />
         <Route path="/dashboard" element={
-          <ProtectedRoute user={user}><DashBoard user={user} setUser={setUser} setMessage={setMessage}/></ProtectedRoute>} />
+          <ProtectedRoute user={user}><DashBoard user={user} setUser={setUser}/></ProtectedRoute>} />
         <Route
           path="/habits"
           element={
             user ? (
-              
               <HabitComponent 
               userId={user.id} 
               user={user} 
               setUser={setUser} 
-              setMessage={setMessage}
               setReadyHabits={setReadyHabits}
               readyHabits={readyHabits} />
-              
             ) : (
               <Navigate to="/" replace />
             )
@@ -275,11 +285,12 @@ const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
         />
         <Route
           path="/addhabit/:habitText"
-          element={<AddHabit user={user} setUser={setUser} setMessage={setMessage} readyHabits={readyHabits} />}
+          element={<AddHabit user={user} setUser={setUser} readyHabits={readyHabits} />}
         />
       </Routes>
     </div>
   )
+  
 }
 
 // callback on localhost:5173/auth/callback
