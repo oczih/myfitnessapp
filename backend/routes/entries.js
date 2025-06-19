@@ -29,7 +29,30 @@ router.get('/:id', async (req,res) => {
         res.status(500).json({ error: 'Failed to fetch entry' });
     }
 })
+router.put('/:id', userExtractor, async (req,res) => {
+    const user = req.user
+    console.log('User ID:', user)
+    const entry = await Entry.findById(req.params.id)
+    if (!entry){
+        return res.status(404).send({ error: 'Entry not found' });
+    }
 
+    console.log('Entry doneBy:', entry.doneBy)
+    if (user.id.toString() !== entry.doneBy.toString()) {
+        return res.status(403).json({ error: 'user not authorized' });
+    }
+    try {
+         const updatedEntry = await Entry.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        )
+        res.json(updatedEntry)
+    }catch(error) {
+        console.error('Error updating entry:', error)
+        res.status(500).json({ error: 'Failed to update entry' })
+    }
+})
 router.post('/', tokenExtractor, async (req,res) => {
     const entry = new Entry(req.body)
     const userId = req.decodedToken.id;

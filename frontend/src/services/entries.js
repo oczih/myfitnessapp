@@ -21,6 +21,7 @@ const getById = async (id) => {
   try {
     const { data } = await axios.get(`${API_URL}/${id}`);
     return data;}
+
     catch(error){
       console.log(error)
 }
@@ -40,8 +41,12 @@ const createEntry = async (newObject) => {
   }
 };
 const update = async (id, newData) => {
+  const config = {
+    headers: { Authorization: token },
+  }
   try {
-    const response = await axios.put(`${API_URL}/${id}`, newData);
+    console.log("Here's the id:",id)
+    const response = await axios.put(`${API_URL}/${id}`, newData, config);
     return response.data;
   } catch (error) {
     console.error("Update failed:", error);

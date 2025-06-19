@@ -6,37 +6,39 @@ import {
 } from 'react-router-dom'
 
 export default function HabitComponent({ userId, user, setUser, setMessage, readyHabits, setReadyHabits }) {
-  const [userHabits, setUserHabits] = useState([]);
   const [selected, setSelected] = useState("")
-
+  useEffect(() => {
+    if (readyHabits.length > 0 && selected === "") {
+      setSelected(encodeURIComponent(readyHabits[0].text));
+    }
+  }, [readyHabits, selected]);
   // Add new habit handler
   const handlePrompt = async () => {
-  const text = window.prompt("Enter your custom habit:");
-  if (!text || text.trim() === "") return;
+    const text = window.prompt("Enter your custom habit:");
+    if (!text || text.trim() === "") return;
 
-  const trimmed = text.trim();
-  if(readyHabits.find(e => e.text === trimmed)){
-    alert("You can't have the same habit twice!")
-    return;
-  }
-  try {
-    const createdHabit = await habitservice.createHabit({ userId, text: trimmed, emoji: "✨" });
-    // Use the returned habit from backend
-    if (createdHabit && createdHabit.text) {
-      setReadyHabits((prev) => [...prev, createdHabit]);
-      setMessage && setMessage("Habit added!");
-    } else {
+    const trimmed = text.trim();
+    if(readyHabits.find(e => e.text === trimmed)){
+      alert("You can't have the same habit twice!")
+      return;
+    }
+    try {
+      const createdHabit = await habitservice.createHabit({ userId, text: trimmed, emoji: "✨" });
+      if (createdHabit && createdHabit.text) {
+        setReadyHabits((prev) => [...prev, createdHabit]);
+        setMessage && setMessage("Habit added!");
+      } else {
+        alert("Failed to add habit");
+      }
+    } catch (error) {
+      console.error("Error adding habit:", error);
       alert("Failed to add habit");
     }
-  } catch (error) {
-    console.error("Error adding habit:", error);
-    alert("Failed to add habit");
-  }
-};
-  const handleSelected = (habitText) => {
-    setSelected(habitText);
   };
-  console.log(selected)
+
+  const handleSelected = (habitText) => {
+    setSelected(encodeURIComponent(habitText));
+  };
   return (
     <div>
       <Header user={user} setUser={setUser} setMessage={setMessage} />
@@ -54,27 +56,29 @@ export default function HabitComponent({ userId, user, setUser, setMessage, read
             >
               {readyHabits.map((habit, i) => (
                 <div key={i} className="flex-shrink-0 ">
-                  <button onClick={() => handleSelected(habit.text)}>
-                    <div
-                      className={`flex flex-col items-center justify-center w-30 h-30 rounded-xl shadow-md cursor-pointer mb-10
-                        outline-transparent outline-[1px] transition-all duration-150 ease-in-out
-                        ${
-                          selected === habit.text
-                            ? "bg-green-600 outline-green-800 drop-shadow-xl"
-                            : "bg-[#7E1F86] hover:drop-shadow-xl text-white"
-                        }`}
-                    >
-                      <div className="text-2xl drop-shadow ">{habit.emoji}</div>
-                      <h2 className={`text-center text-xs font-medium mt-1 ${selected === habit.text ? "text-white" : "text-white"}`}>
-                        {habit.text}
-                      </h2>
-                    </div>
-                  </button>
+                  <button onClick={() => handleSelected(habit.text)} >
+                                      <div
+                                        className={`flex flex-col items-center justify-center w-30 h-30 rounded-xl shadow-md cursor-pointer mb-10
+                                          outline-transparent outline-[1px] transition-all duration-150 ease-in-out 
+                                          ${selected === encodeURIComponent(habit.text) ? "bg-green-600 outline-green-800 drop-shadow-xl" : "bg-[#7E1F86] hover:drop-shadow-xl text-white"}`}
+                                      >
+                                        <div className="text-2xl drop-shadow ">{habit.emoji ? habit.emoji : "✨"}</div>
+                                        <h2 className={`text-center text-xs font-medium mt-1 text-white`}>
+                                          {habit.text}
+                                        </h2>
+                                      </div>
+                                    </button>
                 </div>
               ))}
             </div>
           </div>
-            <Link to={`/addhabit/${encodeURIComponent(selected)}`}><h3 className="normal-case font-bold text-lg btn btn-ghost tracking-tight mb-5 text-white hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md">Create Habit</h3></Link>
+            <Link to={`/addhabit/${selected}`}>
+            <h3 className={`normal-case font-bold text-lg btn btn-ghost tracking-tight mb-5 text-white hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md
+              ${!selected ? 'opacity-50 pointer-events-none' : ''}`}
+            >
+              Create Habit
+            </h3>
+          </Link>
           <button
             onClick={handlePrompt}
             className="normal-case font-bold text-lg btn btn-ghost tracking-tight mb-5 text-white hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md"

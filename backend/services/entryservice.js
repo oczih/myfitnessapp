@@ -1,5 +1,5 @@
 import Entry from '../models/entrymodel.js'
-
+import mongoose from 'mongoose';
 export const getEntries = async () => {
     const entries = await Entry.find().lean();
     return entries
