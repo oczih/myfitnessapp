@@ -49,6 +49,7 @@
           const updatedUser = await userservice.update(user.id, {
             flowers: [...user.flowers, newFlower],
             diamonds: user.diamonds - flower.cost,
+            experience: user.experience + 10
           });
       
           setUser(updatedUser);
@@ -109,9 +110,10 @@
       disabled={!selectedFlower}
       className={!selectedFlower ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] hover:bg-base-300 duration-200' }
     >
-      <h3 className="w-30 h-30 border-5 border-dashed border-[#402905] bg-green-100 rounded-md hover:bg-green-200 flex items-center justify-center transition">
-        {flowerAtSpot ? flowers.find(f => f.name === flowerAtSpot.name)?.emoji : "🌱"}
-      </h3>
+        {flowerAtSpot ? (
+          <h3 className="w-30 h-30 text-3xl border-5 border-dashed border-[#402905] bg-[#39f77e] rounded-md hover:bg-[#0d6e30] flex items-center justify-center transition">
+          {flowers.find(f => f.name === flowerAtSpot.name)?.emoji}</h3>
+        ) : ( <h3 className="w-30 h-30 border-5 border-dashed border-[#402905] bg-green-100 rounded-md hover:bg-green-200 flex items-center justify-center transition">🌱</h3>)}
     </button>
   );
 })}

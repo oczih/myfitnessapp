@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { UserCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
-
+import { ExperienceBar } from './ExperienceBar';
 export const Header = ({ user, setUser }) => {
     return (
         <div>
@@ -12,6 +12,7 @@ export const Header = ({ user, setUser }) => {
                             <UserCircle className="w-5 h-5" />
                             {user.name} logged in
                         </div>
+                        <ExperienceBar user={user} /> 
                     </div>
                 )}
                 
