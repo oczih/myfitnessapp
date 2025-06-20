@@ -22,7 +22,9 @@ const userSchema = new mongoose.Schema({
       type: [{ name: String, position: String }],
       default: []
     },
-    diamonds: { type: Number, default: 0}
+    diamonds: { type: Number, default: 0},
+    caloriegoal: {type: Number, default: 2000},
+    calorieseaten: {type: Number, default: 0}
   });
   
 

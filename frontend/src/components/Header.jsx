@@ -18,15 +18,6 @@ export const Header = ({ user, setUser }) => {
                 
                 {/* Navigation Links & Auth */}
                 <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
-                    {!user && (
-                        <a
-                            className="bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-full hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md flex items-center justify-center text-center"
-                            href="http://localhost:3000/auth/google"
-                        >
-                            Continue with Google
-                        </a>
-                    )}
-
                     {user && (
                         <>
                         <Link to="/" className="hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md">
@@ -41,6 +32,9 @@ export const Header = ({ user, setUser }) => {
                             </Link>
                             <Link to="/flowerfield" className="hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md">
                             <h3 className="normal-case font-bold text-lg btn btn-ghost tracking-tight">Flowerfield</h3>
+                            </Link>
+                            <Link to="/foods" className="hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md">
+                            <h3 className="normal-case font-bold text-lg btn btn-ghost tracking-tight">Foods</h3>
                             </Link>
                             <button
                                 onClick={() => {

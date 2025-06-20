@@ -11,6 +11,7 @@ import entriesrouter from './routes/entries.js'
 import habitsrouter from './routes/habits.js'
 import FitnessUser from './models/usermodel.js'; // Your mongoose user model
 import authroutes from './routes/auth-routes.js'
+import fatSecretRoutes from './routes/foods.js';
 dotenv.config();
 
 const app = express();
@@ -51,6 +52,7 @@ app.use('/auth',authroutes)
 app.use('/api/users', usersrouter);
 app.use('/api/entries', entriesrouter);
 app.use('/api/habits', habitsrouter)
+app.use('/api/fatsecret', fatSecretRoutes);
 app.get('/auth/session', (req, res) => {
   if (req.isAuthenticated()) {
     res.json(req.user);
