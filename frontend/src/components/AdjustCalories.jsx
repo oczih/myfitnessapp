@@ -2,73 +2,86 @@ import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import Input from '@mui/material/Input';
 import { useState, useEffect } from 'react';
+import userservice from '../services/user';
 
-export const AdjustCalories = ({ user, setUser }) => {
-  const [value, setValue] = useState(user.calories);
+export const AdjustCalories = ({ user, setUser, toast, caloriegoal, calorieseaten, setCaloriesGoal, setCaloriesEaten }) => {
+  const [inputValue, setInputValue] = useState(caloriegoal);
 
-  // If user.calories changes from parent, update local value
   useEffect(() => {
-    setValue(user.calories);
-  }, [user.calories]);
+    setInputValue(caloriegoal); // sync input if external value changes
+  }, [caloriegoal]);
 
   const handleSliderChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const handleSliderCommitted = (event, newValue) => {
-    setUser(prev => ({ ...prev, calories: newValue }));
+    setCaloriesGoal(newValue);
+    setInputValue(newValue);
   };
 
   const handleInputChange = (event) => {
-    const inputValue = event.target.value === '' ? '' : Number(event.target.value);
-    if (inputValue === '') {
-      setValue('');
-    } else if (!isNaN(inputValue)) {
-      setValue(inputValue);
-    }
+    const value = event.target.value;
+    setInputValue(value); // let the user type freely
   };
 
   const handleInputBlur = () => {
-    let newValue = value;
-    if (value === '' || value < 1000) newValue = 1000;
-    else if (value > 7000) newValue = 7000;
-
-    setValue(newValue);
-    setUser(prev => ({ ...prev, calories: newValue }));
+    let parsed = Number(inputValue);
+    if (isNaN(parsed) || parsed < 1000) parsed = 1000;
+    if (parsed > 7000) parsed = 7000;
+    setCaloriesGoal(parsed);
+    setInputValue(parsed);
   };
 
+  const handleCalorieChange = async () => {
+    try {
+      userservice.setToken(user.token);
+      const updatedUser = await userservice.update(user.id, { caloriegoal });
+
+      setUser(updatedUser);
+      setCaloriesGoal(updatedUser.caloriegoal);
+      toast.success("Calories updated successfully.");
+    } catch (error) {
+      console.error('Error updating calories:', error);
+      toast.error("Failed to update calories.");
+    }
+  };
+  const sliderValue = (typeof caloriegoal === 'number' && caloriegoal >= 1000 && caloriegoal <= 7000)
+  ? caloriegoal
+  : 1000;
+
   return (
-    <div className="card w-96 bg-[#7E1F86] shadow-xl mx-auto">
-      <div className="card-body text-white rounded-xl">
-        <h2 className="card-title">Adjust Daily Calories</h2>
-        <Box sx={{ width: 300 }}>
-          <Slider
-            value={typeof value === 'number' ? value : 1000}
-            min={1000}
-            max={7000}
-            step={1}
-            onChange={handleSliderChange}
-            onChangeCommitted={handleSliderCommitted}  // only update user state on commit (drag release)
-            valueLabelDisplay="auto"
-            aria-labelledby="input-slider"
-            sx={{ color: 'white' }}
-          />
-          <Input
-            value={value}
-            size="small"
-            onChange={handleInputChange}
-            onBlur={handleInputBlur}
-            inputProps={{
-              step: 1,
-              min: 1000,
-              max: 7000,
-              type: 'number',
-              'aria-labelledby': 'input-slider',
-            }}
-            sx={{ mt: 2, color: 'white', input: { color: 'white' } }}
-          />
-        </Box>
-      </div>
+    <div className="card w-96 bg-[#7E1F86] shadow-xl mx-left ml-10 relative z-30">
+  <div className="card-body text-white rounded-xl">
+    <h2 className="card-title">Adjust Daily Calories</h2>
+
+    <div className="relative z-50 pointer-events-auto">
+      <Box sx={{ width: 300 }}>
+        <Slider
+          value={sliderValue}
+          min={1000}
+          max={7000}
+          step={1}
+          onChange={handleSliderChange}
+          valueLabelDisplay="on"
+          aria-labelledby="input-slider"
+          sx={{
+            color: 'white',
+            '& .MuiSlider-thumb': { width: 24, height: 24 },
+            '& .MuiSlider-track': { height: 6 },
+            '& .MuiSlider-rail': { height: 6 },
+          }}
+        />
+      </Box>
     </div>
+
+    <button
+      className="hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md mt-4 bg-white text-[#7E1F86] px-4 py-2 rounded"
+      onClick={() =>
+        window.confirm("Do you want to update your daily calories?") &&
+        handleCalorieChange()
+      }
+    >
+      Update Calories
+    </button>
+  </div>
+</div>
+
   );
 };

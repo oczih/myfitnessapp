@@ -24,7 +24,16 @@ const userSchema = new mongoose.Schema({
     },
     diamonds: { type: Number, default: 0},
     caloriegoal: {type: Number, default: 2000},
-    calorieseaten: {type: Number, default: 0}
+    calorieseaten: {type: Number, default: 0, min: 0},
+    foodsEaten: [
+      {
+        nutrients: { type: String, required: true },
+        foodName: { type: String, required: true },
+        calories: { type: Number, required: true, min: 0 },
+        date: { type: Date, default: Date.now }
+      }
+    ],
+    lastDiamondAwardDate: { type: Date, default: null }
   });
   
 

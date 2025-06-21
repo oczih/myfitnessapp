@@ -22,10 +22,18 @@ import userservice from './services/user.js'
 import { FlowerField } from './components/FlowerField.jsx';
 import { AddFoods } from './components/AddFoods.jsx';
 import HabitComparison from './components/HabitComparison.jsx';
+import axios from 'axios';
 const App = () => {
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+  const API_URL = `${API_BASE_URL}/api/users`;
+
   const [user, setUser] = useState(null); 
   const [readyHabits, setReadyHabits] = useState([])
   const [diamonds, setDiamonds] = useState(0);
+  const [caloriegoal, setCaloriesGoal] = useState(0)
+  const [calorieseaten, setCaloriesEaten] = useState(0)
+  const [experience, setExperience] = useState(0);
+
 useEffect(() => {
   const initializeUser = async () => {
     const stored = window.localStorage.getItem('loggedFitnessappUser');
@@ -42,6 +50,9 @@ useEffect(() => {
           setUser({ ...fullUser, token: partialUser.token });
           toast("Added user!"); // Combine full data with token
           setDiamonds(fullUser.diamonds || 0);
+          setCaloriesGoal(fullUser.caloriegoal || 0);
+          setCaloriesEaten(fullUser.calorieseaten || 0);
+          setExperience(fullUser.experience || 0);
         } catch (error) {
           console.error('Failed to fetch full user:', error);
         }
@@ -63,7 +74,7 @@ const getTodayWeekday = () => {
 const todaysTasks = (user) => {
   if (!user || !user.entries) return [];
   const today = getTodayWeekday();
-  return user.entries.filter(task => task.weekdays.includes(today));
+  return user.entries.filter(task => task.weekdays && task.weekdays.includes(today));
 }
 
 
@@ -71,22 +82,46 @@ const todaysHabits = todaysTasks(user);
 
 
 const percentage = user ? ProgressBarPercentage({todaysHabits}) : 0;
+
+
+const awardDiamondsOnceADay = async (userId, diamondsToAdd) => {
+  const rawUserJSON = localStorage.getItem('loggedFitnessappUser');
+  let token = null;
+  if (rawUserJSON) {
+    const userObj = JSON.parse(rawUserJSON);
+    token = `Bearer ${userObj.token}`;
+  }
+  if (!token) throw new Error('No token found');
+
+  try {
+    const response = await axios.put(
+      `${API_URL}/${userId}/diamonds`,
+      { diamonds: diamondsToAdd },
+      { headers: { Authorization: token } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Award diamonds error:', error);
+    throw error;
+  }
+};
+
 useEffect(() => {
   if (percentage === 100) {
-    // Fire confetti when percentage hits 100
     confetti({
       particleCount: 150,
       spread: 70,
       origin: { y: 0.6 }
-      
     });
-    try{
-      handleDiamondsChange(5)
-    }catch(error){
-      console.log('Error updating diamonds:', error)
-      return;
-    }
 
+    awardDiamondsOnceADay(user.id, 5)
+      .then((res) => {
+        setDiamonds(res.diamonds);
+        toast(res.message);
+      })
+      .catch((err) => {
+        console.log('Diamonds not awarded:', err.response?.data?.error || err.message);
+      });
   }
 }, [percentage]);
 const ProtectedRoute = ({ user, children }) => {
@@ -104,19 +139,18 @@ const ProtectedRoute = ({ user, children }) => {
     return children;
   };
 
-  const handleDiamondsChange = async (diamonds) => {
-    try {
-      console.log("User token here: ",user.token)
-      userservice.setToken(user.token)
-      const updatedUser = await userservice.update(user.id, {diamonds})
-      console.log('Updated user:', updatedUser)
-      setDiamonds(updatedUser.diamonds)
-      toast(`${diamonds.toString()} diamonds added! 💎`)
-    }catch(error) {
-      console.error('Error updating diamonds:', error)
-      toast.error("Failed to update diamonds.")
-    }
+  const handleDiamondsChange = async (diamondsToAdd) => {
+  try {
+    const newDiamonds = diamonds + diamondsToAdd;
+    userservice.setToken(user.token);
+    const updatedUser = await userservice.update(user.id, { diamonds: newDiamonds });
+    setDiamonds(updatedUser.diamonds);
+    toast(`${diamondsToAdd} diamonds added! 💎`);
+  } catch (error) {
+    console.error('Error updating diamonds:', error);
+    toast.error("Failed to update diamonds.");
   }
+};
 
 const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
   try {
@@ -301,7 +335,16 @@ const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
         <Route path="/flowerfield" element={
         <ProtectedRoute user={user}><FlowerField user={user} setUser={setUser} /></ProtectedRoute>} />
         <Route path="/foods" element={
-        <ProtectedRoute user={user}><AddFoods user={user} setUser={setUser} /></ProtectedRoute>} />
+        <ProtectedRoute user={user}><AddFoods
+         user={user}
+          setUser={setUser}
+          caloriegoal={caloriegoal}
+          setCaloriesGoal={setCaloriesGoal}
+          calorieseaten={setCaloriesEaten}
+          setCaloriesEaten={setCaloriesEaten}
+          setDiamonds={setDiamonds}
+          setExperience={setExperience}
+           /></ProtectedRoute>} />
         <Route path="/dashboard" element={
           <ProtectedRoute user={user}><DashBoard user={user} setUser={setUser}/></ProtectedRoute>} />
         <Route
