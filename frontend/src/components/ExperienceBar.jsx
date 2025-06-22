@@ -14,7 +14,9 @@ const levels = [
 
 
 export const ExperienceBar = ({user}) => {
+    console.log("ExperienceBar user:", user.experience);
     const currentlevel = levels.find(level => user.experience >= level.experience);
+    console.log("Current Level:", currentlevel);
     const nextLevel = levels.find(level => level.level === (currentlevel ? currentlevel.level + 1 : 1));
     return (
         <div>
@@ -22,8 +24,11 @@ export const ExperienceBar = ({user}) => {
                 <div
                     className="bg-blue-600 h-4 rounded-full"
                     style={{
-                        width: `${((currentlevel ? currentlevel.experience : 0) / (nextLevel ? nextLevel.experience : 1)) * 100}%`
-                    }}
+                        width: `${nextLevel
+                            ? ((user.experience - currentlevel.experience) /
+                                (nextLevel.experience - currentlevel.experience)) * 100
+                            : 100}%`,
+                        }}
                 />
             </div>
             <div className="flex justify-between text-sm mt-1 ml-5">

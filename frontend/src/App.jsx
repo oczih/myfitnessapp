@@ -187,7 +187,7 @@ const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
   return (
   <div>
     <Header user={user} setUser={setUser}/>
-    <div className='w-11/15 mx-auto text-center mt-10 bg-stone-200 rounded-xl pt-10 pb-20 drop-shadow-md'>
+    <div className='flex-1 mx-auto text-center mt-10 bg-stone-200 rounded-xl pt-10 pb-20 drop-shadow-md'>
      <h2 className='block text-left text-xl sm:text-xl lg:text-xl text-[#7E1F86] ml-5'>💎 Diamonds: {user.diamonds && user.diamonds >= 0 ? user.diamonds : 0}</h2>
     <h1 className="text-4xl sm:text-5xl text-center lg:text-6xl text-[#7E1F86] font-extrabold tracking-tight mb-10">
           Dashboard
@@ -309,21 +309,6 @@ const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
     
   return(
 <div className="relative min-h-screen bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-[length:20px_20px] bg-repeat overflow-y-auto overflow-x-hidden">
-
-
-
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        transition={Zoom}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
       <Routes>
         <Route path="/" element={
            <PublicRoute user={user}><HomeScreen /></PublicRoute>}/>
@@ -366,6 +351,18 @@ const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
           element={<AddHabit user={user} setUser={setUser} readyHabits={readyHabits} />}
         />
       </Routes>
+            <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        transition={Zoom}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   )
   

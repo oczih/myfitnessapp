@@ -90,9 +90,14 @@ router.post('/:id/foods', userExtractor, async (req, res) => {
 
     const newFood = req.body;
 
-    if (!newFood || !newFood.calories || !newFood.foodName || !newFood.nutrients) {
-      return res.status(400).json({ error: 'Invalid food item' });
-    }
+    if (
+        typeof newFood.calories !== 'number' ||
+        isNaN(newFood.calories) ||
+        typeof newFood.foodName !== 'string' ||
+        !Array.isArray(newFood.nutrients)
+      ) {
+        return res.status(400).json({ error: 'Invalid food item structure' });
+      }
 
     const user = await FitnessUser.findById(userId);
     if (!user) return res.status(404).json({ error: 'User not found' });

@@ -40,6 +40,11 @@ const update = async (id, newData) => {
 };
 
 const postFood = async (id, foodData) => {
+  
+  if (foodData.calories === undefined || foodData.calories === null) {
+  return response.status(400).json({ error: "Missing calories" });
+  }
+  console.log("Posting food with data:", foodData);
   const response = await axios.post(`${API_URL}/${id}/foods`, foodData, {
     headers: getAuthHeader(),
   });

@@ -30,7 +30,8 @@ const userSchema = new mongoose.Schema({
         nutrients: { type: [String], required: true },
         foodName: { type: String, required: true },
         calories: { type: Number, required: true, min: 0 },
-        date: { type: Date, default: Date.now }
+        date: { type: Date, default: Date.now },
+        portions: { type: Number, default: 1, min: 1 }
       }
     ],
     lastDiamondAwardDate: { type: Date, default: null }

@@ -1,40 +1,30 @@
-import { Header } from "./Header"
+import { Header } from "./Header";
 
-export const AllHabits = ({user, setUser}) => {
-    console.log(...user.entries)
-    return (
-        <div>
-            <Header user={user} setUser={setUser}/>
-                    <h2 className='text-3xl sm:text-4xl lg:text-5xl mb-10 mt-10 text-center pb-10 text-black'>Your Habits</h2>
-                    <div className="flex justify-center">
-                    <div
-                        className="w-11/12 md:w-10/12 lg:w-8/12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-                        style={{ maxHeight: "30rem", overflowY: "auto" }}
-                    >
-                        {user.entries.map((habit, i) => (
-                        <div
-                            key={i}
-                            className="flex flex-col items-center justify-between rounded-2xl shadow-lg p-4 bg-stone-100 cursor-pointer hover:shadow-xl transition-shadow duration-200"
-                        >
-                            <div className="text-4xl mb-2 drop-shadow">{habit.emoji}</div>
-                            <h2 className="text-center text-base font-semibold mb-2 text-black">{habit.title}</h2>
+const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-                            {habit.weekdays && habit.weekdays.length > 0 && (
-                            <div className="flex flex-wrap justify-center gap-2 mt-2">
-                                {habit.weekdays.map((day, index) => (
-                                <span
-                                    key={index}
-                                    className="px-2 py-1 text-xs font-medium bg-[#9d78bb] rounded-full"
-                                >
-                                    {day}
-                                </span>
-                                ))}
-                            </div>
-                            )}
-                        </div>
-                        ))}
-                    </div>
-                    </div>
-        </div>
-    )
-}
+export const AllHabits = ({ user, setUser }) => {
+  if (!user || !user.entries) return null;
+    console.log(user.entries.map(habit => habit.weekdays))
+  return (
+    <div>
+      <Header user={user} setUser={setUser} />
+      <h2 className='text-3xl sm:text-4xl lg:text-5xl mb-5 mt-5 text-center pb-10 text-[#7E1F86] font-extrabold '>Habit Calendar</h2>
+
+      <div className="grid grid-cols-2 min-h-150 sm:grid-cols-4 lg:grid-cols-7 gap-4 mx-5">
+        {weekdays.map((day) => (
+          <div key={day} className="bg-[#A14DA0] rounded-xl p-4 hover:drop-shadow-md text-white min-h-48">
+            <h3 className="text-xl font-bold mb-4 text-center">{day}</h3>
+            {user.entries
+              .filter(habit => habit.weekdays?.includes(day))
+              .map((habit, index) => (
+                <div key={index} className="bg-white text-black text-center rounded-lg shadow p-2 mb-3 hover:scale-95 transition duration-150">
+                  <div className="text-2xl">{habit.emoji}</div>
+                  <div className="text-sm font-semibold">{habit.title}</div>
+                </div>
+              ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
