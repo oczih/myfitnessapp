@@ -9,27 +9,28 @@ export const AddFoods = ({ user, setUser, caloriegoal, calorieseaten, setCalorie
   const fetchFood = async (query) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/fatsecret/search-food?q=${encodeURIComponent(query)}`
-    );
+  `http://localhost:3000/api/fatsecret/search-food?q=${encodeURIComponent(query)}`
+);
     const data = await response.json();
-    setResults(data.foods.food); // 👈 Access the actual food array
+    console.log("data:", data)
+    setResults(data.products); // Use OpenFoodFacts "products" array
   } catch (error) {
     console.error("Error fetching food:", error);
   }
 };
-  const extractCalories = (description) => {
-  const match = description.match(/(\d+)\s*kcal/i);
-  return match ? parseInt(match[1]) : 0;
-}; 
 
-  const handleFoodAdd = async (foodItem) => {
+  const handleFoodAdd = async (foodItem, amount) => {
   try {
-    userservice.setToken(user.token);
-
+    console.log("Using token:", user.token);
     const parsedFood = {
-      foodName: foodItem.food_name,
-      nutrients: foodItem.food_description,
-      calories: extractCalories(foodItem.food_description),
+      nutrients: [
+        `Calories: ${foodItem.nutrients['energy-kcal_100g']} kcal`,
+        `Fat: ${foodItem.nutrients['fat_100g']} g`,
+        `Protein: ${foodItem.nutrients['proteins_100g']} g`,
+        `Carbs: ${foodItem.nutrients['carbohydrates_100g']} g`
+      ],
+      foodName: foodItem.product_name,
+      calories: (foodItem.nutrients['energy-kcal_100g'] * (amount)),
     };
 
     const updatedUser = await userservice.postFood(user.id, parsedFood);
@@ -46,38 +47,15 @@ export const AddFoods = ({ user, setUser, caloriegoal, calorieseaten, setCalorie
 };
 const handleFoodDelete = async (foodItem) => {
   try {
-    userservice.setToken(user.token);
-
-    // Find the food item index in the user's foodsEaten array
-    const foodIndex = user.foodsEaten.findIndex(
-      (item) => item.foodName === foodItem.foodName && item._id === foodItem._id
-    );
-    console.log('Food index:', foodIndex);
-    if (foodIndex !== -1) {
-      // Remove the food item from the array
-      const updatedFoods = [...user.foodsEaten];
-      const calories = user.calorieseaten - foodItem.calories
-      updatedFoods.splice(foodIndex, 1)
-      console.log('Updated foods:', updatedFoods);
-      // Update the user's foodsEaten and calorieseaten
-      console.log('FoodItem:', foodItem)
-      const updatedUser = await userservice.update(user.id, {
-        foodsEaten: updatedFoods,
-        calorieseaten: calories,
-      });
-      console.log('Updated User:', updatedUser)
-      setUser(updatedUser);
-      setCaloriesEaten(updatedUser.calorieseaten);
-      toast.success("Food deleted successfully.");
-    } else {
-      toast.error("Food item not found in diary.");
-    }
+    const updatedUser = await userservice.deleteFood(user.id, foodItem._id);
+    setUser(updatedUser);
+    setCaloriesEaten(updatedUser.calorieseaten);
+    toast.success("Food deleted successfully.");
   } catch (error) {
     console.error('Error deleting food:', error);
     toast.error("Failed to delete food from diary.");
   }
-}
-
+};
 
   return (
     <div>
@@ -128,10 +106,6 @@ const handleFoodDelete = async (foodItem) => {
     })
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .map((foodItem, index) => {
-      const cleanedNutrients = foodItem.nutrients
-        .replace(/\s*[-–—]?\s*\d+\s*kcal/gi, '')  // removes " - 350 kcal" or "–350 kcal" etc.
-        .replace(/\s{2,}/g, ' ')                 // extra spaces cleanup
-        .trim();
 
       return (
         <div
@@ -142,9 +116,6 @@ const handleFoodDelete = async (foodItem) => {
             {foodItem.foodName}
             {foodItem.calories ? ` (${foodItem.calories} kcal)` : ""}
           </h3>
-          {cleanedNutrients && (
-            <p className="text-sm italic text-white/80">{cleanedNutrients}</p>
-          )}
           <p className="text-sm text-white/70 mt-1">
             Eaten at:{" "}
             {new Date(foodItem.date).toLocaleTimeString("en-GB", {
@@ -194,17 +165,27 @@ const handleFoodDelete = async (foodItem) => {
               key={foodItem.food_id}
               className="bg-[#7E1F86] text-white font-semibold px-4 py-2 rounded-box hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md"
             >
+              <img
+                src={foodItem.image || "https://via.placeholder.com/150"}
+                alt={foodItem.product_name}
+                className="w-16 h-16 object-cover rounded mb-2"
+              />
               <h3 className="font-bold text-lg">
-                {foodItem.food_name}
-                {foodItem.brand_name ? ` (${foodItem.brand_name})` : ""}
+                {foodItem.product_name}
+                {foodItem.brands ? ` (${foodItem.brands})` : ""}
               </h3>
-              <p>{foodItem.food_description}</p>
+              <p>Kilocalories: {foodItem.nutrients['energy-kcal_100g']} kcal/100g</p>
+              <p>Fat: {foodItem.nutrients['fat_100g']} g/100g</p>
+              <p>Protein: {foodItem.nutrients['proteins_100g']} g/100g</p>
+              <p>Carbs: {foodItem.nutrients['carbohydrates_100g']} g/100g</p>
               <button
                 className="hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md mt-4 bg-white text-[#7E1F86] px-4 py-2 rounded"
-                onClick={() =>
-                  window.confirm("Do you want to add this to your diary") &&
-                  handleFoodAdd(foodItem)
-                }
+                onClick={() => {
+                  const amount = window.prompt("Add portion amount (1 portion = 100g): ");
+                  if (amount) {
+                    handleFoodAdd(foodItem, amount);
+                  }
+                }}
               >
                 Add to the diary
               </button>

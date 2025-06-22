@@ -1,44 +1,30 @@
-import express from 'express'
-const router = express.Router()
-import dotenv from 'dotenv'
-dotenv.config()
-
-
-
-const getFatSecretAccessToken = async () => {
-  const credentials = Buffer.from(
-    `${process.env.FATSECRET_CLIENT_ID}:${process.env.FATSECRET_CLIENT_SECRET}`
-  ).toString('base64');
-
-  const response = await fetch('https://oauth.fatsecret.com/connect/token', {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${credentials}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: 'grant_type=client_credentials&scope=basic',
-  });
-
-  const data = await response.json();
-  return data.access_token; // Expires in ~2h
-};
+import express from 'express';
+const router = express.Router();
 
 router.get('/search-food', async (req, res) => {
   const query = req.query.q || 'banana';
   try {
-    const accessToken = await getFatSecretAccessToken();
-    const response = await fetch(`https://platform.fatsecret.com/rest/server.api?method=foods.search&search_expression=${query}&format=json`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const response = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1`);
+    
+    if (!response.ok) {
+      throw new Error(`OpenFoodFacts API responded with status ${response.status}`);
+    }
+
     const data = await response.json();
-    res.json(data);
+
+    // Optionally map the data to return only relevant fields
+    const results = data.products.map(product => ({
+      product_name: product.product_name,
+      brands: product.brands,
+      nutrients: product.nutriments,
+      image: product.image_front_small_url,
+    }));
+
+    res.json({ count: data.count, products: results });
   } catch (err) {
-    console.error('Error fetching from FatSecret:', err);
+    console.error('Error fetching from OpenFoodFacts:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 export default router;
-

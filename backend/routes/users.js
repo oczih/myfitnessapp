@@ -110,7 +110,7 @@ router.post('/:id/foods', userExtractor, async (req, res) => {
   }
 }
 )
-router.delete('/:id/foods/:index', userExtractor, async (req, res) => {
+router.delete('/:id/foods/delete/:foodId', userExtractor, async (req, res) => {
   try {
     const user = await FitnessUser.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
@@ -119,17 +119,20 @@ router.delete('/:id/foods/:index', userExtractor, async (req, res) => {
       return res.status(403).json({ error: 'Not authorized' });
     }
 
-    const index = parseInt(req.params.index);
-    const food = user.foodsEaten[index];
-    if (!food) return res.status(404).json({ error: 'Food item not found' });
+    const foodId = req.params.foodId;
+    const foodIndex = user.foodsEaten.findIndex(f => f._id.toString() === foodId);
 
-    user.calorieseaten -= food.calories || 0;
-    user.foodsEaten.splice(index, 1);
+    if (foodIndex === -1) return res.status(404).json({ error: 'Food item not found' });
+
+    const food = user.foodsEaten[foodIndex];
+
+    user.calorieseaten = Math.max(0, user.calorieseaten - (food.calories || 0));
+    user.foodsEaten.splice(foodIndex, 1);
 
     const updatedUser = await user.save();
     res.json(updatedUser.toJSON());
   } catch (err) {
-    console.error('Failed to remove food:', err);
+    console.error('Failed to remove food:', err.message);
     res.status(500).json({ error: 'Server error' });
   }
 });

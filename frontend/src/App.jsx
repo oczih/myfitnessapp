@@ -306,8 +306,7 @@ const handleHabitDoneChange = async (habitId, taskdone, { setReadyHabits }) => {
     }, [user?.id, setReadyHabits])
 
 
-
-  console.log(user)
+    
   return(
 <div className="relative min-h-screen bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-[length:20px_20px] bg-repeat overflow-y-auto overflow-x-hidden">
 
