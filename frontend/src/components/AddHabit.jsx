@@ -4,6 +4,7 @@ import { CheckList } from './Calendar';
 import entries from "../services/entries";
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from "react-toastify";
+import {motion} from 'framer-motion'
 export const AddHabit = ({ user, setUser, readyHabits }) => {
    const { habitText } = useParams();
   const decodedHabitText = decodeURIComponent(habitText);
@@ -41,12 +42,12 @@ export const AddHabit = ({ user, setUser, readyHabits }) => {
         <h2 className='text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-10 drop-shadow-xl'>{habit.emoji ? habit.emoji : "✨"} {habit.text}</h2>
         <CheckList selectedWeekdays={selectedWeekdays} setSelectedWeekdays={setSelectedWeekdays} />
         <h2 className='text-2xl sm:text-2xl lg:text-2xl mb-10 drop-shadow-xl'>Add this habit to your habits?</h2>
-        <button 
+        <motion.button 
           onClick={handleSubmit}
           className="normal-case font-bold text-lg btn btn-ghost tracking-tight mb-5 bg-green-600 text-white hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md"
         >
           Add to my habits
-        </button>
+        </motion.button>
       </div>
     </div>
   );

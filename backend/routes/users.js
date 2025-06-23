@@ -175,5 +175,33 @@ router.put('/:id/diamonds', userExtractor, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+router.put('/:id/streak', async (req, res) => {
+  try {
+    const user = await FitnessUser.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    const lastCompletion = user.lastHabitCompletionDate ? new Date(user.lastHabitCompletionDate).toDateString() : null;
+
+    if (lastCompletion === today) {
+      return res.json({ message: 'Streak already counted for today', streak: user.streak });
+    }
+
+    if (lastCompletion === yesterday) {
+      user.streak += 1;
+    } else {
+      user.streak = 1;
+    }
+
+    user.lastHabitCompletionDate = new Date();
+    await user.save();
+
+    res.json({ message: 'Streak updated successfully', streak: user.streak });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 export default router

@@ -18,7 +18,7 @@ export const AddFoods = ({ user, setUser, caloriegoal, calorieseaten, setCalorie
 );
     const data = await response.json();
     console.log("data:", data)
-    setResults(data.products); // Use OpenFoodFacts "products" array
+    setResults(data.products);
   } catch (error) {
     console.error("Error fetching food:", error);
   }finally {
@@ -146,7 +146,7 @@ const handleFoodDelete = async (foodItem) => {
     {/* Right: Food Search and Results */}
     <div className="lg:w-1/3 w-full">
       <input
-        className="border p-2 rounded-full bg-[#7E1F86] text-white w-full mb-4"
+        className="border p-2 rounded-full bg-[#7E1F86] text-white w-full mb-4 hover:bg-[#621369] transition "
         type="text"
         placeholder="Search for food"
         onKeyDown={(e) => {

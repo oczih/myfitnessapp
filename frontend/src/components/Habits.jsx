@@ -4,7 +4,7 @@ import { Header } from '../components/Header'
 import {
   Link
 } from 'react-router-dom'
-
+import {motion} from 'framer-motion'
 export default function HabitComponent({ userId, user, setUser, setMessage, readyHabits, setReadyHabits }) {
   const [selected, setSelected] = useState("")
   useEffect(() => {
@@ -56,7 +56,10 @@ export default function HabitComponent({ userId, user, setUser, setMessage, read
             >
               {readyHabits.map((habit, i) => (
                 <div key={i} className="flex-shrink-0 ">
-                  <button onClick={() => handleSelected(habit.text)} >
+                  <motion.button onClick={() => handleSelected(habit.text)}
+                  initial={{ scale: 0.8, filter: "blur(8px)", opacity: 0 }}
+                  animate={{ scale: 1, filter: "blur(0px)", opacity: 1 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }} >
                                       <div
                                         className={`flex flex-col items-center justify-center w-30 h-30 rounded-xl shadow-md cursor-pointer mb-10
                                           outline-transparent outline-[1px] transition-all duration-150 ease-in-out 
@@ -67,7 +70,7 @@ export default function HabitComponent({ userId, user, setUser, setMessage, read
                                           {habit.text}
                                         </h2>
                                       </div>
-                                    </button>
+                                    </motion.button>
                 </div>
               ))}
             </div>

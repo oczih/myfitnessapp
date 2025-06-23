@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     ],
     experience: { type: Number, default: 0 },
     streak: { type: Number, default: 0 },
-  
+    lastHabitCompletionDate: { type: Date, default: null },
     googleId: {
       type: String,
       default: null,

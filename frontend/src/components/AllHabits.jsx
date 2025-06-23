@@ -1,5 +1,5 @@
 import { Header } from "./Header";
-
+import { motion } from 'framer-motion'
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export const AllHabits = ({ user, setUser }) => {
@@ -17,10 +17,20 @@ export const AllHabits = ({ user, setUser }) => {
             {user.entries
               .filter(habit => habit.weekdays?.includes(day))
               .map((habit, index) => (
-                <div key={index} className="bg-white text-black text-center rounded-lg shadow p-2 mb-3 hover:scale-95 transition duration-150">
+                <motion.div
+                    key={index}
+                    className="bg-white text-black text-center rounded-lg shadow p-2 mb-3 hover:scale-95 transition duration-150"
+                    initial={{ y: 20, filter: "blur(8px)", opacity: 0 }}
+                    animate={{ y: 0, filter: "blur(0px)", opacity: 1 }}
+                    transition={{
+                      duration: 0.1,
+                      ease: [0.42, 0.5, 0.5, 0],
+                      delay: index * 0.05,
+                    }}
+                  >
                   <div className="text-2xl">{habit.emoji}</div>
                   <div className="text-sm font-semibold">{habit.title}</div>
-                </div>
+                </motion.div>
               ))}
           </div>
         ))}
