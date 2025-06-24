@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
     "dev": "cross-env NODE_ENV=development node --watch index.js",
     "build:ui": "rm -rf dist && cd ../frontend && npm install && npm run build && cp -r dist ../backend",
     "deploy:full": "npm run build:ui && git add . && git commit -m \"Build frontend\" && git push",
