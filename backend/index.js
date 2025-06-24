@@ -4,8 +4,7 @@ import session from 'express-session'
 import passport from './config/passport.js'
 import dotenv from 'dotenv';
 import cors from 'cors';
-import { ExpressAuth } from '@auth/express';
-import Google from '@auth/express/providers/google';
+
 import usersrouter from './routes/users.js'
 import entriesrouter from './routes/entries.js'
 import habitsrouter from './routes/habits.js'
@@ -47,13 +46,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 console.log('Registering route:', '/auth');
-app.use('/auth',authroutes)
+app.use('/auth', authroutes);
 console.log('Registering route:', '/api/users');
 app.use('/api/users', usersrouter);
 console.log('Registering route:', '/api/entries');
 app.use('/api/entries', entriesrouter);
 console.log('Registering route:', '/api/habits');
-app.use('/api/habits', habitsrouter)
+app.use('/api/habits', habitsrouter);
 console.log('Registering route:', '/api/fatsecret');
 app.use('/api/fatsecret', fatSecretRoutes);
 console.log('Registering route:', '/auth/session');
@@ -64,27 +63,13 @@ app.get('/auth/session', (req, res) => {
     res.status(401).json({ error: 'Not authenticated' });
   }
 });
-app.use(express.static(path.join(__dirname, 'dist')));
-    
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-  });
 
-app._router.stack.forEach(middleware => {
-  if (middleware.route) {
-    console.log(middleware.route.path); // route path
-  } else if (middleware.name === 'router') {
-    middleware.handle.stack.forEach(handler => {
-      if (handler.route) {
-        console.log(handler.route.path);
-      }
-    });
-  }
+app.use(express.static(path.join(__dirname, 'dist')));
+app.get('/{*any}', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-})
-  
+
+
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('Connected to MongoDB');
