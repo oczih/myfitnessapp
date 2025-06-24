@@ -7,6 +7,7 @@ Live Demo: https://myfitnessapp-ea7p.onrender.com/
 
 Users can:
 
+- Register/Login using Google
 - Log in ready-made/custom habits
 - Log in their foods + adjust daily calories
 - Get experience points and diamonds
@@ -14,13 +15,13 @@ Users can:
 
 What did I learn?
   
-- How to design and build a backend API for a real-world application.
-- How to connect a server to a database and manage data effectively.
-- How to structure project files and organize backend code properly.
-- How to handle user authentication and secure routes.
-- How to manage relationships between different types of data.
-- How to validate incoming data to ensure the app runs reliably.
-- How to handle errors and provide useful responses to the client.
-- How to debug, test, and improve the backend logic.
-- How to think through the full request-response cycle in a web app.
-- How to style with Tailwind, MaterialUI & DaisyUI
+- Integrating Google OAuth using Passport.js for seamless authentication
+- Designing RESTful APIs and managing routes effectively in Express
+- Structuring a full-stack app with a clear separation of concerns
+- Implementing protected routes and user session handling
+- Building and managing Mongoose schemas with relational data
+- Using middleware for data validation and request preprocessing
+- Writing meaningful error handling logic for better debugging
+- Improving user experience with responsive, modern UI design using Tailwind and DaisyUI
+- Fetching and integrating third-party data from the Open Food Facts API
+- Managing asynchronous operations and understanding backend data flow
