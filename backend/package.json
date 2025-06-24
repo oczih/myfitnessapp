@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cross-env NODE_ENV=development node --watch index.js",
-    "build:ui": "rimraf dist && cd ../frontend && npm install && npm run build && cpx \"dist/**\" ../backend/dist",
+    "build:ui": "rm -rf dist && cd ../frontend && npm install && npm run build && cp -r dist ../backend",
     "deploy:full": "npm run build:ui && git add . && git commit -m \"Build frontend\" && git push",
     "postinstall": "npm run build:ui"
   },
