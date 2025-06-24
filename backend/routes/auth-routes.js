@@ -1,7 +1,8 @@
 import express from 'express'
 const router = express.Router()
 import passport from '../config/passport.js'
-
+import dotenv from 'dotenv'
+dotenv.config()
 router.get(
     "/google",
     passport.authenticate("google", {
@@ -17,7 +18,7 @@ router.get(
     const { user, token } = req.user;
 
     // Encode URI components for safety
-    const redirectUrl = new URL('http://localhost:5173/auth/callback');
+    const redirectUrl = new URL(`${VITE_FRONTEND_URL}/auth/callback`);
     redirectUrl.searchParams.set('token', token);
     redirectUrl.searchParams.set('name', user.name);
     redirectUrl.searchParams.set('email', user.email);
