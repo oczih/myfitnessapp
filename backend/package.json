@@ -6,7 +6,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "cross-env NODE_ENV=development node --watch index.js"
+    "dev": "cross-env NODE_ENV=development node --watch index.js",
+    "build:ui": "rimraf dist && cd ../frontend && npm install && npm run build && cpx \"dist/**\" ../backend/dist",
+    "deploy:full": "npm run build:ui && git add . && git commit -m \"Build frontend\" && git push",
+    "postinstall": "npm run build:ui"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +27,12 @@
     "mongoose": "^8.15.2",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "passport-oauth": "^1.0.0"
+    "passport-oauth": "^1.0.0",
+    "path": "^0.12.7",
+    "url": "^0.11.4"
+  },
+  "devDependencies": {
+    "cpx": "^1.2.1",
+    "rimraf": "^6.0.1"
   }
 }

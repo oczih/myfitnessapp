@@ -11,6 +11,8 @@ import entriesrouter from './routes/entries.js'
 import habitsrouter from './routes/habits.js'
 import FitnessUser from './models/usermodel.js'; // Your mongoose user model
 import authroutes from './routes/auth-routes.js'
+import { fileURLToPath } from 'url';
+import path from 'path';
 import fatSecretRoutes from './routes/foods.js';
 dotenv.config();
 
@@ -18,6 +20,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Middleware
 app.use(express.json());
 app.use(cors({
@@ -42,17 +46,17 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-console.log('Google Client ID:', process.env.GOOGLE_CLIENT_ID);
-console.log('Google Client Secret:', process.env.GOOGLE_CLIENT_SECRET ? '***' : 'Not set');
-
-
-
+console.log('Registering route:', '/auth');
 app.use('/auth',authroutes)
+console.log('Registering route:', '/api/users');
 app.use('/api/users', usersrouter);
+console.log('Registering route:', '/api/entries');
 app.use('/api/entries', entriesrouter);
+console.log('Registering route:', '/api/habits');
 app.use('/api/habits', habitsrouter)
+console.log('Registering route:', '/api/fatsecret');
 app.use('/api/fatsecret', fatSecretRoutes);
+console.log('Registering route:', '/auth/session');
 app.get('/auth/session', (req, res) => {
   if (req.isAuthenticated()) {
     res.json(req.user);
@@ -60,7 +64,27 @@ app.get('/auth/session', (req, res) => {
     res.status(401).json({ error: 'Not authenticated' });
   }
 });
+app.use(express.static(path.join(__dirname, 'dist')));
+    
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
 
+app._router.stack.forEach(middleware => {
+  if (middleware.route) {
+    console.log(middleware.route.path); // route path
+  } else if (middleware.name === 'router') {
+    middleware.handle.stack.forEach(handler => {
+      if (handler.route) {
+        console.log(handler.route.path);
+      }
+    });
+  }
+});
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+})
+  
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('Connected to MongoDB');
