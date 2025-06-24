@@ -28,7 +28,6 @@ const createHabit = async newObject => {
     const config = {
         headers: {Authorization: token}
     }
-    console.log(newObject)
     const response = await axios.post(API_URL, newObject, config);
     return response.data;
 }

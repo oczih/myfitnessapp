@@ -75,7 +75,7 @@ const App = () => {
             setDiamonds(fullUser.diamonds || 0);
             setCaloriesGoal(fullUser.caloriegoal || 0);
             setCaloriesEaten(fullUser.calorieseaten || 0);
-            setExperience(fullUser.experience || 0);
+            setExperience(fullUser?.experience || 0);
           } catch (error) {
             console.error('Failed to fetch full user:', error);
           }
@@ -135,7 +135,6 @@ const App = () => {
       .catch((err) => {
         const errorMessage = err.response?.data?.error || err.message || "Failed to award diamonds.";
         toast.error(errorMessage);
-        console.log("Diamonds not awarded:", errorMessage);
       });
     axios.put(`${API_URL}/${user.id}/streak`)
     .then((res) => {
@@ -166,7 +165,6 @@ const App = () => {
     try {
       entries.setToken(user.token);
       const updatedTask = await entries.update(habitId, { done: !taskdone });
-      console.log('Updated task:', updatedTask);
 
       setUser(prevUser => ({
         ...prevUser,
@@ -305,7 +303,6 @@ const App = () => {
       async function fetchUserHabits() {
         try {
           const res = await habitservice.getById(user.id);
-          console.log(res);
           setReadyHabits(res);
   
         } catch (error) {

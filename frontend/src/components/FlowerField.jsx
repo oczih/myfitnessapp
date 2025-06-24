@@ -48,7 +48,7 @@
           const updatedUser = await userservice.update(user.id, {
             flowers: [...user.flowers, newFlower],
             diamonds: user.diamonds - flower.cost,
-            experience: user.experience + 10
+            experience: user?.experience + 10
           });
       
           setUser(updatedUser);

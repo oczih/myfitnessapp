@@ -14,11 +14,15 @@ const levels = [
 ];
 
 export const ExperienceBar = ({ user, shouldAnimate }) => {
-  const currentlevel = levels.find(level => user.experience >= level.experience);
-  const nextLevel = levels.find(level => level.level === (currentlevel ? currentlevel.level + 1 : 1));
+  const userExperience = Math.max(0, user?.experience);
+  const currentlevel = levels
+  .slice()
+  .reverse()
+  .find(level => userExperience >= level.experience) || levels[0];
+  const nextLevel = levels.find(level => level.level === currentlevel.level + 1);
 
   const progress = nextLevel
-    ? ((user.experience - currentlevel.experience) / (nextLevel.experience - currentlevel.experience)) * 100
+    ? ((userExperience - currentlevel.experience) / (nextLevel.experience - currentlevel.experience)) * 100
     : 100;
 
   return (

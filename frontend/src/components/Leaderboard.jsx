@@ -90,7 +90,7 @@ export const Leaderboard = ({ user, setUser }) => {
                         Level {level}
                       </p>
                       <p className="text-sm font-medium text-yellow-600">
-                        {u.experience} XP
+                        {u?.experience} XP
                       </p>
                     </div>
                   </div>

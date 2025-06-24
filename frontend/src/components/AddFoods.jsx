@@ -48,7 +48,7 @@ export const AddFoods = ({ user, setUser, caloriegoal, calorieseaten, setCalorie
     setUser(updatedUser);
     setCaloriesEaten(updatedUser.calorieseaten);
     setDiamonds(updatedUser.diamonds + 2);
-    setExperience(updatedUser.experience + 2 );
+    setExperience(updatedUser?.experience + 2 );
     toast.success("Food added! +2 diamonds, +2 XP");
   } catch (error) {
     toast.error("Failed to add food.");

@@ -8,7 +8,6 @@ let token = null
 
 const setToken = newToken => {
   token = `Bearer ${newToken}`
-  console.log("Using token:", token); 
 }
 
 
@@ -31,7 +30,6 @@ const createEntry = async (newObject) => {
     headers: { Authorization: token },
   };
   try {
-    console.log(config)
     const response = await axios.post(API_URL, newObject, config);
     console.log(response.data)
     return response.data;
@@ -45,7 +43,6 @@ const update = async (id, newData) => {
     headers: { Authorization: token },
   }
   try {
-    console.log("Here's the id:",id)
     const response = await axios.put(`${API_URL}/${id}`, newData, config);
     return response.data;
   } catch (error) {
