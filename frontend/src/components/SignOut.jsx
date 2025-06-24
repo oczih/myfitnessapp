@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-
 export default function SignOut() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -8,7 +7,7 @@ export default function SignOut() {
   useEffect(() => {
     async function signout() {
       try {
-        await fetch('http://localhost:3000/auth/signout', {
+        await fetch(`${import.meta.env.VITE_BACKEND_URL }/auth/signout`, {
           method: 'POST', // tai GET riippuen backendistä
           credentials: 'include',
         })

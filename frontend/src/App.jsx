@@ -270,7 +270,7 @@ const App = () => {
       {/* Google Login Button */}
       <a
         className="bg-blue-100 w-[90%] max-w-xs text-blue-800 font-semibold px-4 py-2 rounded-full hover:scale-95 transition-transform duration-150 ease-in-out drop-shadow-md flex items-center justify-center text-center"
-        href="http://localhost:3000/auth/google"
+        href={`${import.meta.env.VITE_BACKEND_URL}/auth/google`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -18,7 +18,7 @@ router.get(
     const { user, token } = req.user;
 
     // Encode URI components for safety
-    const redirectUrl = new URL(`${VITE_FRONTEND_URL}/auth/callback`);
+    const redirectUrl = new URL(`${process.env.BACKEND_URL}/auth/callback`);
     redirectUrl.searchParams.set('token', token);
     redirectUrl.searchParams.set('name', user.name);
     redirectUrl.searchParams.set('email', user.email);
