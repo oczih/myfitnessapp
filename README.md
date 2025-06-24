@@ -3,7 +3,7 @@
 
 ![](myfitnessappdemo.gif)
 
-Live Demo: 
+Live Demo: https://myfitnessapp-ea7p.onrender.com/
 
 Users can:
 
